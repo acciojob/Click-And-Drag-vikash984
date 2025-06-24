@@ -1,8 +1,30 @@
-cy.get('.items')
-  .trigger('mousedown', { which: 1, pageX: 493, pageY: 391 })
-  .trigger('mousemove', { pageX: 271, pageY: 391 }) // drag left
-  .trigger('mouseup', { force: true });
+const slider = document.querySelector('.items');
 
-cy.get('.items').should($items => {
-  expect($items[0].scrollLeft).to.greaterThan(0); // ✅ should pass now
+let isDown = false;
+let startX;
+let scrollLeft;
+
+slider.addEventListener('mousedown', (e) => {
+  isDown = true;
+  slider.classList.add('active');
+  startX = e.pageX - slider.offsetLeft;
+  scrollLeft = slider.scrollLeft;
+});
+
+slider.addEventListener('mouseleave', () => {
+  isDown = false;
+  slider.classList.remove('active');
+});
+
+slider.addEventListener('mouseup', () => {
+  isDown = false;
+  slider.classList.remove('active');
+});
+
+slider.addEventListener('mousemove', (e) => {
+  if (!isDown) return;
+  e.preventDefault();
+  const x = e.pageX - slider.offsetLeft;
+  const walk = (x - startX) * 1.5; // scroll speed
+  slider.scrollLeft = scrollLeft - walk;
 });
