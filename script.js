@@ -1,28 +1,31 @@
-let isDown = false;
-let startX;
-let scrollLeft;
+<script>
+  const slider = document.querySelector('.items');
+  let isDown = false;
+  let startX;
+  let scrollLeft;
 
-itemsContainer.addEventListener('mousedown', (e) => {
-  isDown = true;
-  itemsContainer.classList.add('active');
-  startX = e.pageX - itemsContainer.offsetLeft;
-  scrollLeft = itemsContainer.scrollLeft;
-});
+  slider.addEventListener('mousedown', (e) => {
+    isDown = true;
+    slider.classList.add('active');
+    startX = e.pageX - slider.offsetLeft;
+    scrollLeft = slider.scrollLeft;
+  });
 
-itemsContainer.addEventListener('mouseleave', () => {
-  isDown = false;
-  itemsContainer.classList.remove('active');
-});
+  slider.addEventListener('mouseleave', () => {
+    isDown = false;
+    slider.classList.remove('active');
+  });
 
-itemsContainer.addEventListener('mouseup', () => {
-  isDown = false;
-  itemsContainer.classList.remove('active');
-});
+  slider.addEventListener('mouseup', () => {
+    isDown = false;
+    slider.classList.remove('active');
+  });
 
-itemsContainer.addEventListener('mousemove', (e) => {
-  if (!isDown) return;
-  e.preventDefault();
-  const x = e.pageX - itemsContainer.offsetLeft;
-  const walk = (x - startX) * 2; // scroll-fast
-  itemsContainer.scrollLeft = scrollLeft - walk;
-});
+  slider.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - slider.offsetLeft;
+    const walk = (x - startX) * 2; // speed factor
+    slider.scrollLeft = scrollLeft - walk;
+  });
+</script>
