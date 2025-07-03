@@ -36,36 +36,75 @@
 
 <script>
 //Your code goes here 
-  const slider = document.querySelector('.items');
-  let isDown = false;
-  let startX;
-  let scrollLeft;
+const container = document.querySelector('.items');
+const cubes = document.querySelectorAll('.item');
 
-  slider.addEventListener('mousedown', (e) => {
-    isDown = true;
-    slider.classList.add('active');
-    startX = e.pageX - slider.offsetLeft;
-    scrollLeft = slider.scrollLeft;
-  });
+let selectedCube = null;
+let offsetX = 0;
+let offsetY = 0;
+let containerRect = container.getBoundingClientRect();
 
-  slider.addEventListener('mouseleave', () => {
-    isDown = false;
-    slider.classList.remove('active');
-  });
+// Helper: Clamp value within min and max
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(value, max));
+}
 
-  slider.addEventListener('mouseup', () => {
-    isDown = false;
-    slider.classList.remove('active');
+// Position cubes in initial grid
+function layoutInitialGrid() {
+  const columns = 5;
+  const spacing = 120; // 100px cube + 20px gap
+  cubes.forEach((cube, index) => {
+    const row = Math.floor(index / columns);
+    const col = index % columns;
+    cube.style.left = `${col * spacing}px`;
+    cube.style.top = `${row * spacing}px`;
   });
+}
 
-  slider.addEventListener('mousemove', (e) => {
-    if (!isDown) return;
-    e.preventDefault();
-    const x = e.pageX - slider.offsetLeft;
-    const walk = (x - startX) * 2; // Multiplier = scroll speed
-    slider.scrollLeft = scrollLeft - walk;
-  });
+// Drag Start
+function onMouseDown(e) {
+  selectedCube = e.target;
+  if (!selectedCube.classList.contains('item')) return;
+
+  const cubeRect = selectedCube.getBoundingClientRect();
+  offsetX = e.clientX - cubeRect.left;
+  offsetY = e.clientY - cubeRect.top;
+
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
+}
+
+// Drag Move
+function onMouseMove(e) {
+  if (!selectedCube) return;
+
+  let x = e.clientX - containerRect.left - offsetX;
+  let y = e.clientY - containerRect.top - offsetY;
+
+  // Constrain within container
+  x = clamp(x, 0, container.clientWidth - selectedCube.clientWidth);
+  y = clamp(y, 0, container.clientHeight - selectedCube.clientHeight);
+
+  selectedCube.style.left = `${x}px`;
+  selectedCube.style.top = `${y}px`;
+}
+
+// Drag End
+function onMouseUp() {
+  selectedCube = null;
+  document.removeEventListener('mousemove', onMouseMove);
+  document.removeEventListener('mouseup', onMouseUp);
+}
+
+// Setup
+layoutInitialGrid();
+container.addEventListener('mousedown', onMouseDown);
+window.addEventListener('resize', () => {
+  containerRect = container.getBoundingClientRect();
+});
 </script>
+
+ 
 
   </body>
 </html>
